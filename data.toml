@@ -87,3 +87,84 @@ current_moves = [
 ]
 gender = "genderfluid"
 
+[type_data.fire]
+resistant_to = ["plant"]
+weak_to = ["water"]
+
+[type_data.water]
+resistant_to = ["fire"]
+weak_to = ["plant"]
+
+[type_data.plant]
+resistant_to = ["water"]
+weak_to = ["fire"]
+
+[type_data.normal]
+resistant_to = []
+weak_to = []
+
+[[abilities]]
+id = "fire_resistant"
+name = "Fire Resistant"
+description = "This mon can't receive a Burn."
+
+[[abilities]]
+id = "tough_eyes"
+name = "Tough Eyes"
+description = "This mon can't have their accuracy affected by physical blinding moves."
+
+[[abilities]]
+id = "cold_resistant"
+name = "Cold Resistant"
+description = "This mon can't be Frozen."
+
+[[moves]]
+id = "headbutt"
+name = "Headbutt"
+accuracy = 75
+base_power = 20
+category = "physical"
+pp = 40
+priority = 0
+# one_foe, all_foes, one_ally, all_allies, self, all_allies_and_self, any_mon, 
+# any_mon_including_self, all_mons, all_mons_including_self, entire_arena, entire_arena_including_self
+target = "one_foe" 
+type = "normal"
+
+[[moves]]
+id = "scratch"
+name = "Scratch"
+accuracy = 100
+base_power = 15
+category = "physical"
+pp = 40
+priority = 0
+target = "one_foe"
+type = "normal"
+
+[[moves]]
+id = "growl"
+name = "Growl"
+accuracy = 100
+base_power = 0
+category = "status"
+pp = 30
+priority = 1
+target = "one_foe"
+type = "normal"
+[[moves.boosts]]
+atk = -1 # -1 stage of attack for target
+
+[[moves]]
+id = "hiss"
+name = "Hiss"
+accuracy = 100
+base_power = 0
+category = "status"
+pp = 30
+priority = 1
+target = "one_foe"
+type = "normal"
+[[moves.boosts]]
+def = -1
+
