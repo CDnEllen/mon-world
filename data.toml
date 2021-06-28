@@ -1,0 +1,89 @@
+[[mon_defs]]
+id = "fierasaur" # IDs are case-insensitive and unique to each def; for the default version of a mon, they are usually that mon's name
+species = "Fierasaur" # species name
+types = ["fire"]
+abilities = [
+    "fire_resistant",
+    "tough_eyes"
+]
+height = 0.35 # meters
+weight = 1.5 # kilograms
+evolutions = [
+    # none for now
+]
+possible_moves = [
+    [1, "headbutt"],
+    [1, "growl"],
+]
+base_exp = 64
+
+[mon_defs.base_stats]
+hp = 50
+atk = 50
+def = 50
+spatk = 50
+spdef = 50
+
+[mon_defs.gender_ratio]
+female = 0.395
+male = 0.395
+non-binary = 0.1
+agender = 0.1
+not_listed = 0.01
+
+[[mon_defs]]
+id = "aguana"
+species = "Aguana"
+types = ["water"]
+abilities = [
+    "cold_resistant"
+]
+height = 0.3 # meters
+weight = 1.2 # kilograms
+evolutions = [
+    # none for now
+]
+possible_moves = [
+    [1, "scratch"],
+    [1, "hiss"],
+]
+base_exp = 64
+
+[mon_defs.base_stats]
+hp = 50
+atk = 50
+def = 50
+spatk = 50
+spdef = 50
+
+[mon_defs.gender_ratio]
+female = 0.395
+male = 0.395
+non-binary = 0.1
+agender = 0.1
+not_listed = 0.01
+
+[[mon_instances]]
+id = "fiona"
+def = "fierasaur" # the ID of the mon_def
+nickname = "Fiona" # individual mon's name
+ability = "fire_resistant"
+level = 1
+current_moves = [
+    "headbutt",
+    "growl"
+]
+gender = "female"
+
+[[mon_instances]]
+id = "alex"
+def = "aguana"
+nickname = "Alex"
+ability = "cold_resistant"
+level = 1
+current_moves = [
+    "scratch",
+    "hiss"
+]
+gender = "genderfluid"
+
