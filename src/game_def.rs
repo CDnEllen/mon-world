@@ -10,14 +10,31 @@ pub struct MonDef {
     learnset: Vec<(i64, String)>,
     base_exp: i64,
 
-    hp: i64,
-    atk: i64,
-    spatk: i64,
-    def: i64,
-    spdef: i64,
+    pub hp: i64,
+    pub atk: i64,
+    pub spatk: i64,
+    pub def: i64,
+    pub spdef: i64,
 
     height: f64,
     weight: f64,
+}
+
+impl MonDef {
+    pub fn moves_at_level(&self, lvl: i64) -> Vec<String> {
+        let move_idx_plus_one = self
+            .learnset
+            .iter()
+            .enumerate()
+            .find(|(_, (move_lvl, _))| move_lvl > &lvl)
+            .map(|(n, (_, _))| n + 1)
+            .unwrap_or(self.learnset.len());
+
+        self.learnset[move_idx_plus_one.saturating_sub(6)..move_idx_plus_one]
+            .iter()
+            .map(|(_, move_def)| move_def.to_owned())
+            .collect::<Vec<_>>()
+    }
 }
 
 pub fn build_mon_defs(src: &toml::Value) -> HashMap<String, MonDef> {
@@ -60,7 +77,7 @@ pub fn build_mon_defs(src: &toml::Value) -> HashMap<String, MonDef> {
                         .collect::<Vec<_>>()
                 })
                 .unwrap();
-            let learnset = mon["possible_moves"]
+            let mut learnset = mon["possible_moves"]
                 .as_array()
                 .map(|moves| {
                     moves
@@ -79,6 +96,7 @@ pub fn build_mon_defs(src: &toml::Value) -> HashMap<String, MonDef> {
                         .collect::<Vec<_>>()
                 })
                 .unwrap();
+            learnset.sort_by(|lhs, rhs| lhs.0.cmp(&rhs.0));
 
             let base_exp = mon["base_exp"].as_integer().unwrap();
 
@@ -370,8 +388,8 @@ pub fn build_moves(src: &toml::Value) -> HashMap<String, MoveDef> {
 
 #[derive(Debug)]
 pub struct EncounterTable {
-    id: String,
-    mons: Vec<(i64, i64, String)>,
+    pub id: String,
+    pub mons: Vec<(i64, i64, String)>,
 }
 
 pub fn build_encounter_tables(src: &toml::Value) -> HashMap<String, EncounterTable> {
@@ -404,4 +422,31 @@ pub fn build_encounter_tables(src: &toml::Value) -> HashMap<String, EncounterTab
     });
 
     encounters
+}
+
+#[derive(Debug)]
+pub struct GameDef {
+    pub encounter_tables: HashMap<String, EncounterTable>,
+    pub move_defs: HashMap<String, MoveDef>,
+    pub type_chart: TypeChart,
+    pub mon_instances: HashMap<String, MonInstance>,
+    pub mon_defs: HashMap<String, MonDef>,
+}
+
+impl GameDef {
+    pub fn from_toml(src: &toml::Value) -> Self {
+        let mon_defs = build_mon_defs(src.get("mon_defs").unwrap());
+        let mon_instances = build_mon_instances(src.get("mon_instances").unwrap());
+        let type_chart = build_type_chart(src.get("type_data").unwrap());
+        let move_defs = build_moves(src.get("moves").unwrap());
+        let encounter_tables = build_encounter_tables(src.get("encounter_tables").unwrap());
+
+        GameDef {
+            mon_defs,
+            mon_instances,
+            type_chart,
+            move_defs,
+            encounter_tables,
+        }
+    }
 }
