@@ -125,8 +125,7 @@ accuracy = 75
 base_power = 20
 category = "physical"
 priority = 0
-# one_foe, all_foes, one_ally, all_allies, self, all_allies_and_self, any_mon, 
-# any_mon_including_self, all_mons, all_mons_including_self, entire_arena, entire_arena_including_self
+# one_foe all_foes one_ally all_allies one_mon all_mons arena
 target = "one_foe" 
 type = "normal"
 
@@ -149,7 +148,7 @@ category = "status"
 priority = 1
 target = "one_foe"
 type = "normal"
-[[moves.boosts]]
+[moves.boosts]
 atk = -1 # -1 stage of attack for target
 
 [[moves]]
@@ -161,6 +160,6 @@ category = "status"
 priority = 1
 target = "one_foe"
 type = "normal"
-[[moves.boosts]]
+[moves.boosts]
 def = -1
 

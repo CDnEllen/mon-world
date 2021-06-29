@@ -226,3 +226,144 @@ pub fn build_type_chart(src: &toml::Value) -> TypeChart {
 
     TypeChart(chart)
 }
+
+#[derive(Debug)]
+pub enum Category {
+    Physical,
+    Special,
+    Status,
+}
+
+#[derive(Debug)]
+pub struct TargetType {
+    targets_self: bool,
+    target_type: TargetTypeModSelf,
+}
+
+#[derive(Debug)]
+pub enum TargetTypeModSelf {
+    OneFoe,
+    AllFoes,
+    OneAlly,
+    AllAllies,
+    OneMon,
+    AllMons,
+    Arena,
+    None,
+}
+
+#[derive(Debug)]
+pub struct MoveDef {
+    id: String,
+    name: String,
+    accuracy: i64,
+    base_power: i64,
+    category: Category,
+    priority: i64,
+    target: TargetType,
+    move_type: String,
+
+    atk_boost: i64,
+    spatk_boost: i64,
+    def_boost: i64,
+    spdef_boost: i64,
+}
+
+pub fn build_moves(src: &toml::Value) -> HashMap<String, MoveDef> {
+    let mut moves = HashMap::new();
+
+    src.as_array().unwrap().iter().for_each(|move_| {
+        let move_ = move_.as_table().unwrap();
+        let id = move_["id"].as_str().unwrap().to_owned();
+        let name = move_["name"].as_str().unwrap().to_owned();
+        let accuracy = move_["accuracy"].as_integer().unwrap();
+        let base_power = move_["base_power"].as_integer().unwrap();
+        let category = match move_["category"].as_str().unwrap() {
+            "physical" => Category::Physical,
+            "special" => Category::Special,
+            "status" => Category::Status,
+            _ => panic!(""),
+        };
+        let priority = move_["priority"].as_integer().unwrap();
+        assert!(priority < 6);
+
+        let (targets_self, target_type) = if let Some(target) = move_["target"].as_str() {
+            (None, target)
+        } else if let Some(target) = move_["target"].as_array() {
+            assert!(target.len() == 2);
+            (
+                Some(target[0].as_bool().unwrap()),
+                target[1].as_str().unwrap(),
+            )
+        } else {
+            panic!("")
+        };
+        let target = TargetType {
+            targets_self: targets_self.unwrap_or(false),
+            target_type: match target_type {
+                "one_foe" => TargetTypeModSelf::OneFoe,
+                "all_foes" => TargetTypeModSelf::AllFoes,
+                "one_ally" => TargetTypeModSelf::OneAlly,
+                "all_allies" => TargetTypeModSelf::AllAllies,
+                "one_mon" => TargetTypeModSelf::OneMon,
+                "all_mons" => {
+                    assert!(targets_self.is_some(), "write out a bool explicitly pls");
+                    TargetTypeModSelf::AllMons
+                }
+                "arena" => {
+                    assert!(targets_self.is_some(), "write out a bool explicitly pls");
+                    TargetTypeModSelf::Arena
+                }
+                "" => {
+                    assert!(targets_self.is_some(), "write out a bool explicitly pls");
+                    TargetTypeModSelf::None
+                }
+                _ => panic!(""),
+            },
+        };
+        let move_type = move_["type"].as_str().unwrap().to_owned();
+
+        dbg!(move_.get("boosts"));
+        let (atk_boost, spatk_boost, def_boost, spdef_boost) =
+            match move_.get("boosts").and_then(toml::Value::as_table) {
+                Some(boosts) => (
+                    boosts
+                        .get("atk")
+                        .and_then(toml::Value::as_integer)
+                        .unwrap_or(0),
+                    boosts
+                        .get("spatk")
+                        .and_then(toml::Value::as_integer)
+                        .unwrap_or(0),
+                    boosts
+                        .get("def")
+                        .and_then(toml::Value::as_integer)
+                        .unwrap_or(0),
+                    boosts
+                        .get("spdef")
+                        .and_then(toml::Value::as_integer)
+                        .unwrap_or(0),
+                ),
+                None => (0, 0, 0, 0),
+            };
+
+        let move_ = MoveDef {
+            id: id.clone(),
+            name,
+            accuracy,
+            base_power,
+            category,
+            priority,
+            target,
+            move_type,
+
+            atk_boost,
+            spatk_boost,
+            def_boost,
+            spdef_boost,
+        };
+        moves.insert(id, move_);
+    });
+
+    moves
+}
