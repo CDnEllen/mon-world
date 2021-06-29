@@ -172,8 +172,8 @@ mons = ["fiona"]
 trainer = "Trainer Jenny"
 mons = ["alex"]
 
-[[encounter_table]]
-area_id = "dark_forest_grass1"
+[[encounter_tables]]
+id = "dark_forest_grass1"
 mons = [
     [1,5,"fierasaur"],
     [2,4,"aguana"]

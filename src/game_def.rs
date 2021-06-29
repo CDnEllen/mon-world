@@ -367,3 +367,41 @@ pub fn build_moves(src: &toml::Value) -> HashMap<String, MoveDef> {
 
     moves
 }
+
+#[derive(Debug)]
+pub struct EncounterTable {
+    id: String,
+    mons: Vec<(i64, i64, String)>,
+}
+
+pub fn build_encounter_tables(src: &toml::Value) -> HashMap<String, EncounterTable> {
+    let mut encounters = HashMap::new();
+
+    src.as_array().unwrap().iter().for_each(|encounter| {
+        let encounter = encounter.as_table().unwrap();
+        let id = encounter["id"].as_str().unwrap();
+        let mons = encounter["mons"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|entry| {
+                let entry = entry.as_array().unwrap();
+                assert!(entry.len() == 3);
+                let lvl_lower = entry[0].as_integer().unwrap();
+                let lvl_upper = entry[1].as_integer().unwrap();
+                let mon_id = entry[2].as_str().unwrap().to_owned();
+
+                (lvl_lower, lvl_upper, mon_id)
+            })
+            .collect::<Vec<_>>();
+        encounters.insert(
+            id.to_owned(),
+            EncounterTable {
+                id: id.to_owned(),
+                mons,
+            },
+        );
+    });
+
+    encounters
+}

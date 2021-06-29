@@ -23,9 +23,11 @@ fn main() {
     let mon_instances = game_def::build_mon_instances(root.get("mon_instances").unwrap());
     let type_chart = game_def::build_type_chart(root.get("type_data").unwrap());
     let moves = game_def::build_moves(root.get("moves").unwrap());
+    let encounters = game_def::build_encounter_tables(root.get("encounter_tables").unwrap());
 
     dbg!(mon_defs);
     dbg!(mon_instances);
     dbg!(type_chart);
     dbg!(moves);
+    dbg!(encounters);
 }
