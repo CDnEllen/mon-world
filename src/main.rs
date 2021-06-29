@@ -21,7 +21,9 @@ fn main() {
 
     let mon_defs = game_def::build_mon_defs(root.get("mon_defs").unwrap());
     let mon_instances = game_def::build_mon_instances(root.get("mon_instances").unwrap());
+    let type_chart = game_def::build_type_chart(root.get("type_data").unwrap());
 
     dbg!(mon_defs);
     dbg!(mon_instances);
+    dbg!(type_chart);
 }

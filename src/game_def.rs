@@ -164,3 +164,65 @@ pub fn build_mon_instances(src: &toml::Value) -> HashMap<String, MonInstance> {
 
     instances
 }
+
+#[derive(Debug)]
+pub enum Effectiveness {
+    Double,
+    One,
+    Half,
+}
+
+#[derive(Debug)]
+pub struct TypeChart(HashMap<String, HashMap<String, Effectiveness>>);
+
+pub fn build_type_chart(src: &toml::Value) -> TypeChart {
+    let mut chart = HashMap::new();
+
+    let types = src
+        .as_table()
+        .unwrap()
+        .iter()
+        .map(|(type_name, _)| type_name)
+        .collect::<Vec<_>>();
+
+    for &ty in &types {
+        let effectivenesses = chart.entry(ty.to_owned()).or_insert_with(HashMap::new);
+        for &ty in &types {
+            effectivenesses.insert(ty.to_owned(), Effectiveness::One);
+        }
+    }
+
+    src.as_table()
+        .unwrap()
+        .iter()
+        .for_each(|(type_name, data)| {
+            let effectivity = data.as_table().unwrap();
+            // if type_name == "fire"
+            // then "weak_to = ["water"]
+            effectivity["weak_to"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|ty| ty.as_str().unwrap().to_owned())
+                .for_each(|ty| {
+                    // chart["water"]["fire"] == Effectiveness::Double
+                    chart
+                        .get_mut(&ty)
+                        .unwrap()
+                        .insert(type_name.to_owned(), Effectiveness::Double);
+                });
+            effectivity["resistant_to"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|ty| ty.as_str().unwrap().to_owned())
+                .for_each(|ty| {
+                    chart
+                        .get_mut(&ty)
+                        .unwrap()
+                        .insert(type_name.to_owned(), Effectiveness::Half);
+                });
+        });
+
+    TypeChart(chart)
+}
