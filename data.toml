@@ -163,3 +163,18 @@ type = "normal"
 [moves.boosts]
 def = -1
 
+[[encounters]]
+id = "encounter1"
+[encounters.side1]
+trainer = "player"
+mons = ["fiona"]
+[encounters.side2]
+trainer = "Trainer Jenny"
+mons = ["alex"]
+
+[[encounter_table]]
+area_id = "dark_forest_grass1"
+mons = [
+    [1,5,"fierasaur"],
+    [2,4,"aguana"]
+]
