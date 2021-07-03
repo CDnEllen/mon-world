@@ -1,4 +1,5 @@
 use rand::Rng;
+use std::io;
 
 macro_rules! unwrap_matches {
     ($e:expr, $p:pat) => {
@@ -29,6 +30,30 @@ fn main() {
                 vec![],
                 encounter_id.clone()
             ));
+        }
+    }
+}
+
+fn menu(text: String, options: Vec<String>) -> usize {
+    loop {
+        println!("{}", text);
+        let mut count: u32 = 0;
+
+        for option in &options {
+            count += 1;
+            println!("{}. {}", count, option);
+        }
+
+        let mut input = String::new();
+
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read input.");
+
+        let input: usize = input.trim().parse().expect("Invalid input.");
+
+        if input < options.len() {
+            return input;
         }
     }
 }
